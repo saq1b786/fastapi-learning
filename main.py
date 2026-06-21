@@ -1,33 +1,26 @@
 
 from fastapi import FastAPI
 from models import PlayerCreate
-
+from database import create_players_table, add_players, get_all_players, get_one_player, delete_player
 app = FastAPI()
 
-players = []
+create_players_table()
 
 @app.get("/players")
 def get_players():
-    return players
+    return get_all_players() 
 
 @app.post("/players")
 def add_player(player: PlayerCreate):
-    players.append(player.model_dump())
-    return {"message": f"{player.name} has been added!"}
+    return add_players(player)
 
 
 @app.get("/players/{name}")
 def single_player(name: str):
-    for player in players:
-        if player['name'] == name:
-            return player  
-    return f'no player was found with the name {name}'
-
+    return get_one_player(name)
+    
 
 @app.delete('/players/{name}')
-def delete_player(name: str):
-    for player in players:
-        if player['name'] == name:
-            players.remove(player) 
-            return f"{name} has been deleted!"
-    return f"{name} was not found."
+def remove_player(name: str):
+    return delete_player(name)
+    
